@@ -11,7 +11,12 @@ import "@uppy/core/dist/style.min.css"
 import "@uppy/dashboard/dist/style.min.css"
 
 function createUppy() {
-  return new Uppy().use(Tus, {endpoint: 'http://127.0.0.1:8000/files'})
+  return new Uppy().use(Tus, {
+    endpoint: "/api/upload",
+    headers: {
+      Authorization: `Bearer 09c80386-15cf-4423-86a2-7f1bdb084082`,
+    },
+  })
 }
 
 export default function UppyDashboard() {

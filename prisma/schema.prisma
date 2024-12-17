@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserInfo {
+  id                 String     @id @default(cuid())
+  user               String     @unique
+  token              String     @unique
+  totalSize          Int        @default(0)
+  totalUploadTimes   Int        @default(0)
+  totalUploadByte    Int        @default(0)
+  totalDownloadTimes Int        @default(0)
+  totalDownloadByte  Int        @default(0)
+  createdAt          DateTime   @default(now())
+  lastUploadAt       DateTime?
+  lastDownloadAt     DateTime?
+  FileInfo           FileInfo[]
+
+  @@index([token])
+  @@index([lastUploadAt, lastDownloadAt]) // Composite index for date queries
+}
+
+model FileInfo {
+  fileId         String    @id @unique
+  user           UserInfo  @relation(fields: [userId], references: [id])
+  userId         String    @unique
+  fileName       String
+  fileSize       Int
+  fileType       String    @default("")
+  uploadAt       DateTime  @default(now())
+  downloadTimes  Int       @default(0)
+  lastDownloadAt DateTime?
+
+  @@index([userId, uploadAt]) // Composite index for user's file queries
+  @@index([userId, lastDownloadAt]) // For expired file queries
+}
